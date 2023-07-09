@@ -9,6 +9,8 @@ const uint PIN_DISPLAY_2 = 20;
 const uint PIN_DISPLAY_3 = 19;
 const uint PIN_DISPLAY_4 = 18;
 
+uint displays[4] = {PIN_DISPLAY_1, PIN_DISPLAY_2, PIN_DISPLAY_3, PIN_DISPLAY_4};
+
 const uint PIN_SEG_A = 8;
 const uint PIN_SEG_B = 9;
 const uint PIN_SEG_C = 10;
@@ -17,8 +19,6 @@ const uint PIN_SEG_E = 12;
 const uint PIN_SEG_F = 13;
 const uint PIN_SEG_G = 14;
 const uint PIN_SEG_P = 15;
-
-
 
 struct digit_key {
 	char key[3];
@@ -119,8 +119,6 @@ int main() {
 	gpio_init(PIN_DISPLAY_4);
 	gpio_set_dir(PIN_DISPLAY_4, GPIO_OUT);
 	
-	uint displays[4] = {PIN_DISPLAY_1, PIN_DISPLAY_2, PIN_DISPLAY_3, PIN_DISPLAY_4};
-	
 	gpio_init(PIN_SEG_A);
 	gpio_set_dir(PIN_SEG_A, GPIO_OUT);
 	gpio_set_outover(PIN_SEG_A, GPIO_OVERRIDE_INVERT);
@@ -153,9 +151,6 @@ int main() {
 	gpio_set_dir(PIN_SEG_P, GPIO_OUT);
 	gpio_set_outover(PIN_SEG_P, GPIO_OVERRIDE_INVERT);
 	
-	
-	
-	
 	while (1) {
 			
 			char temp[] = "18.5C";
@@ -175,40 +170,25 @@ int main() {
 					}
 				}
 			}
-			 
 				
 			for (uint d=0; d<4 ; d++) {
 				
 				int32_t mask = digit_keys[0].hexval;
-				
-				if (pointfound == 1) {
 
-						for (uint i = 0; i < (sizeof(digit_keys) / sizeof(digit_keys[0])); i++) {
-							
-							if ( d == (pointloc-1) ) {
-							
-								if ( strchr(digit_keys[i].key, newtemp[d]) != NULL && strchr(digit_keys[i].key, '.') != NULL) {
-									mask = digit_keys[i].hexval;
-								}
-							} else {
-								if ( strchr(digit_keys[i].key, newtemp[d]) != NULL && strchr(digit_keys[i].key, '.') == NULL) {
-									mask = digit_keys[i].hexval;
-								}
-							}
+				for (uint i = 0; i < (sizeof(digit_keys) / sizeof(digit_keys[0])); i++) {
 					
+					if (pointfound == 1 && d == (pointloc-1) ) {
+					
+						if ( strchr(digit_keys[i].key, newtemp[d]) != NULL && strchr(digit_keys[i].key, '.') != NULL) {
+							mask = digit_keys[i].hexval;
 						}
-						
-					
 					} else {
-						
-						for (uint i = 0; i < (sizeof(digit_keys) / sizeof(digit_keys[0])); i++) {
-							if ( strchr(digit_keys[i].key, newtemp[d]) != NULL  && strchr(digit_keys[i].key, '.') == NULL) {
-								mask = digit_keys[i].hexval;
-							}
-					
+						if ( strchr(digit_keys[i].key, newtemp[d]) != NULL && strchr(digit_keys[i].key, '.') == NULL) {
+							mask = digit_keys[i].hexval;
 						}
-
 					}
+			
+				}
 				
 				gpio_put_masked(0xff << PIN_SEG_A, mask << PIN_SEG_A);
 				
